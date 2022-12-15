@@ -12,7 +12,7 @@
     <div class="row justify-content-around">
 
         <!-- Earnings (Monthly) Card Example -->
-        <div class="col-xl-5 col-md-5 mb-4">
+        <div class="col-xl-4 col-md-4 mb-4">
             <div class="card border-left-danger shadow h-100 py-2">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
@@ -22,7 +22,7 @@
                             <div class="h5 mb-0 font-weight-bold text-gray-800" id="suhu_udara">-</div>
                         </div>
                         <div class="col-auto">
-                            <i class="fas fa-thermometer-half fa-2x text-gray-300"></i>
+                            <i class="fas fa-thermometer-half fa-2x text-gray-500"></i>
                         </div>
                     </div>
                 </div>
@@ -30,7 +30,7 @@
         </div>
 
         <!-- Earnings (Monthly) Card Example -->
-        <div class="col-xl-5 col-md-5 mb-4">
+        <div class="col-xl-4 col-md-4 mb-4">
             <div class="card border-left-success shadow h-100 py-2">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
@@ -40,17 +40,14 @@
                             <div class="h5 mb-0 font-weight-bold text-gray-800" id="kelembaban_udara">-</div>
                         </div>
                         <div class="col-auto">
-                            <i class="fas fa-tint fa-2x text-gray-300"></i>
+                            <i class="fas fa-tint fa-2x text-gray-500"></i>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="row justify-content-around">
 
-        <!-- Earnings (Monthly) Card Example -->
-        <div class="col-xl-5 col-md-5 mb-4">
+        <div class="col-xl-4 col-md-4 mb-4">
             <div class="card border-left-warning shadow h-100 py-2">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
@@ -60,25 +57,7 @@
                             <div class="h5 mb-0 font-weight-bold text-gray-800" id="suhu_air">-</div>
                         </div>
                         <div class="col-auto">
-                            <i class="fas fa-thermometer fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Earnings (Monthly) Card Example -->
-        <div class="col-xl-5 col-md-5 mb-4">
-            <div class="card border-left-secondary shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-secondary text-uppercase mb-1">
-                                pH Air</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="ph_air">-</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-water fa-2x text-gray-300"></i>
+                            <i class="fas fa-thermometer fa-2x text-gray-500"></i>
                         </div>
                     </div>
                 </div>
@@ -88,7 +67,24 @@
     <div class="row justify-content-around">
 
         <!-- Earnings (Monthly) Card Example -->
-        <div class="col-xl-5 col-md-5 mb-4">
+        <div class="col-xl-4 col-md-4 mb-4">
+            <div class="card border-left-secondary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-secondary text-uppercase mb-1">
+                                pH Air</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="ph_air">-</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-water fa-2x text-gray-500"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-4 col-md-4 mb-4">
             <div class="card border-left-primary shadow h-100 py-2">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
@@ -98,7 +94,7 @@
                             <div class="h5 mb-0 font-weight-bold text-gray-800" id="tds_air">-</div>
                         </div>
                         <div class="col-auto">
-                            <i class="fab fa-nutritionix fa-2x text-gray-300"></i>
+                            <i class="fab fa-nutritionix fa-2x text-gray-500"></i>
                         </div>
                     </div>
                 </div>
@@ -106,7 +102,7 @@
         </div>
 
         <!-- Earnings (Monthly) Card Example -->
-        <div class="col-xl-5 col-md-5 mb-4">
+        <div class="col-xl-4 col-md-4 mb-4">
             <div class="card border-left-info shadow h-100 py-2">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
@@ -116,26 +112,109 @@
                             <div class="h5 mb-0 font-weight-bold text-gray-800" id="jarak_air">-</div>
                         </div>
                         <div class="col-auto">
-                            <i class="fas fa-ruler fa-2x text-gray-300"></i>
+                            <i class="fas fa-ruler fa-2x text-gray-500"></i>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
-    <div class="row justify-content-center">
-        <div class="col-md-11 mb-4">
-            <div class="card border-left-danger shadow h-100 py-2">
+    <div class="row justify-content-around">
+        <div class="col-md-4 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
-                                Keadaan Air</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">Terlalu Asam</div>
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Tinggi Tanaman 1</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">18 cm</div>
                         </div>
                         <div class="col-auto">
-                            <i class="fas fa-water fa-2x text-gray-300"></i>
+                            <i class="fas fa-ruler-vertical fa-2x text-gray-500"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Tinggi Tanaman 2</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">18 cm</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-ruler-vertical fa-2x text-gray-500"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Tinggi Tanaman 3</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">18 cm</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-ruler-vertical fa-2x text-gray-500"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-4 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Pertumbuhan Tanaman 1</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">18 cm</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-seedling fa-2x text-gray-500"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Pertumbuhan Tanaman 2</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">18 cm</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-seedling fa-2x text-gray-500"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Pertumbuhan Tanaman 3</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">18 cm</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-seedling fa-2x text-gray-500"></i>
                         </div>
                     </div>
                 </div>
