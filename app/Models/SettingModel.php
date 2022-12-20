@@ -8,7 +8,7 @@ class SettingModel extends Model
 {
     protected $table = 'setting';
     protected $primaryKey = 'id';
-    protected $allowedFields = ['suhu', 'lampu', 'created_at'];
+    protected $allowedFields = ['batas_suhu', 'lama_penyinaran', 'batas_air'];
     protected $useAutoIncrement = true;
     protected $useTimestamps = true;
 }

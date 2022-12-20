@@ -19,4 +19,12 @@ class TanamanModel extends Model
         $this->where('is_active', '1');
         return $this->first();
     }
+
+    public function getTanamanById($id)
+    {
+        $this->select('*, tanaman.id as tanaman_id, setting.id as setting_id');
+        $this->join('setting', 'setting.tanaman_id = tanaman.id', 'inner');
+        $this->where('tanaman.id', $id);
+        return $this->first();
+    }
 }
