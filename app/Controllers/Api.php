@@ -6,16 +6,18 @@ use App\Models\LogModel;
 use App\Models\WaktuPenyinaranModel;
 use App\Models\SettingModel;
 use App\Models\TanamanModel;
+use App\Models\ManualModel;
 
 class Api extends BaseController
 {
-    protected $logModel, $waktuPenyinaranModel, $settingModel, $tanamanModel;
+    protected $logModel, $waktuPenyinaranModel, $settingModel, $tanamanModel, $manualModel;
     public function __construct()
     {
         $this->logModel = new LogModel();
         $this->waktuPenyinaranModel = new WaktuPenyinaranModel();
         $this->settingModel = new SettingModel();
         $this->tanamanModel = new TanamanModel();
+        $this->manualModel = new ManualModel();
     }
 
     public function log()
@@ -49,23 +51,35 @@ class Api extends BaseController
             'waktu' => $datetime
         ];
 
-        $tanaman_aktif = $this->tanamanModel->getTanamanAktif();
-        if (!empty($tanaman_aktif)) {
-            $log['tanaman_id'] = $tanaman_aktif['id'];
-            $lamp['tanaman_id'] = $tanaman_aktif['id'];
-            $this->waktuPenyinaranModel->insert($lamp);
-            $setting = $this->settingModel->orderBy('created_at', 'DESC')->first();
-            $waktu_detik = $this->waktuPenyinaranModel->where('DATE(waktu)', $date)->countAllResults();
-            $waktu_detail = $this->secToHR($waktu_detik);
+        $manual = $this->manualModel->first();
+        if ($manual['manual'] == '1') {
             $data = [
-                'lampu_on' => ($waktu_detik < $setting['lama_penyinaran']) ? TRUE : FALSE,
-                'kipas_on' => ($setting['batas_suhu'] < $suhu_udara) ? TRUE : FALSE
+                'lampu_on' => ($manual['lampu_on'] == '1') ? TRUE : FALSE,
+                'kipas_on' => ($manual['kipas_on'] == '1') ? TRUE : FALSE
             ];
+            $tanaman_aktif = $this->tanamanModel->getTanamanAktif();
+            if (!empty($tanaman_aktif)) {
+                $log['tanaman_id'] = $tanaman_aktif['id'];
+            }
         } else {
-            $data = [
-                'lampu_on' => FALSE,
-                'kipas_on' => FALSE
-            ];
+            $tanaman_aktif = $this->tanamanModel->getTanamanAktif();
+            if (!empty($tanaman_aktif)) {
+                $log['tanaman_id'] = $tanaman_aktif['id'];
+                $lamp['tanaman_id'] = $tanaman_aktif['id'];
+                $this->waktuPenyinaranModel->insert($lamp);
+                $setting = $this->settingModel->orderBy('created_at', 'DESC')->first();
+                $waktu_detik = $this->waktuPenyinaranModel->where('DATE(waktu)', $date)->countAllResults();
+                $waktu_detail = $this->secToHR($waktu_detik);
+                $data = [
+                    'lampu_on' => ($waktu_detik < $setting['lama_penyinaran']) ? TRUE : FALSE,
+                    'kipas_on' => ($setting['batas_suhu'] < $suhu_udara) ? TRUE : FALSE
+                ];
+            } else {
+                $data = [
+                    'lampu_on' => FALSE,
+                    'kipas_on' => FALSE
+                ];
+            }
         }
 
         $this->logModel->insert($log);

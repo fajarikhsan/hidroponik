@@ -215,6 +215,10 @@
     let nama_tanaman_edit_err = '<?= $validation->hasError('nama_tanaman_edit'); ?>';
     let batas_suhu_edit_err = '<?= $validation->hasError('batas_suhu_edit'); ?>';
     let lama_penyinaran_edit_err = '<?= $validation->hasError('lama_penyinaran_edit'); ?>';
+
+    function secToHr(sec) {
+        return parseInt(sec) / 3600;
+    }
 </script>
 <script>
     $(document).ready(function() {
@@ -253,7 +257,7 @@
                     $('#setting_id').val(data.setting_id);
                     $('#nama_tanaman_edit').val(data.nama_tanaman);
                     $('#batas_suhu_edit').val(data.batas_suhu);
-                    $('#lama_penyinaran_edit').val(data.lama_penyinaran);
+                    $('#lama_penyinaran_edit').val(secToHr(data.lama_penyinaran));
                     $('#tanggal_semai_edit').val(data.tanggal_semai);
                     $('#tanggal_tanam_edit').val(data.tanggal_tanam);
                     if (data.is_active == 1) {

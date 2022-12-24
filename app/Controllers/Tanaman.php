@@ -79,13 +79,19 @@ class Tanaman extends BaseController
         $setting = [
             'tanaman_id' => $last_insert_id,
             'batas_suhu' => $batas_suhu,
-            'lama_penyinaran' => $lama_penyinaran,
+            'lama_penyinaran' => $this->hrToSec($lama_penyinaran),
             'batas_air' => 0
         ];
 
         $this->settingModel->insert($setting);
         session()->setFlashdata('success', 'Data berhasil ditambahkan.');
         return redirect()->to(base_url('tanaman'));
+    }
+
+    public function hrToSec($hour)
+    {
+        $seconds = (int) $hour * 3600;
+        return $seconds;
     }
 
     public function getTanaman()
@@ -152,7 +158,7 @@ class Tanaman extends BaseController
 
         $setting = [
             'batas_suhu' => $batas_suhu,
-            'lama_penyinaran' => $lama_penyinaran,
+            'lama_penyinaran' => $this->hrToSec($lama_penyinaran),
             'batas_air' => 0
         ];
         $this->settingModel->update($setting_id, $setting);
