@@ -2,11 +2,12 @@
 
 namespace App\Controllers;
 
+use DateTime;
 use App\Models\LogModel;
-use App\Models\WaktuPenyinaranModel;
+use App\Models\ManualModel;
 use App\Models\SettingModel;
 use App\Models\TanamanModel;
-use App\Models\ManualModel;
+use App\Models\WaktuPenyinaranModel;
 
 class Api extends BaseController
 {
@@ -68,8 +69,8 @@ class Api extends BaseController
                 $lamp['tanaman_id'] = $tanaman_aktif['id'];
                 $this->waktuPenyinaranModel->insert($lamp);
                 $setting = $this->settingModel->orderBy('created_at', 'DESC')->first();
-                $waktu_detik = $this->waktuPenyinaranModel->where('DATE(waktu)', $date)->countAllResults();
-                $waktu_detail = $this->secToHR($waktu_detik);
+                $minMax = $this->waktuPenyinaranModel->getWaktuPenyinaranByDate($date, $tanaman_aktif['id']);
+                $waktu_detik = (!empty($minMax)) ? $this->dateDiff($minMax['min'], $minMax['max']) : 0;
                 $data = [
                     'lampu_on' => ($waktu_detik < $setting['lama_penyinaran']) ? TRUE : FALSE,
                     'kipas_on' => ($setting['batas_suhu'] < $suhu_udara) ? TRUE : FALSE
@@ -97,5 +98,26 @@ class Api extends BaseController
         $minutes = sprintf("%02d", $minutes_temp);
         $seconds = sprintf("%02d", $seconds_temp);
         return "$hours:$minutes:$seconds";
+    }
+
+    public function dateDiff($date1, $date2)
+    {
+        // Create two new DateTime-objects...
+        $date1 = new DateTime($date1);
+        $date2 = new DateTime($date2);
+
+        $diff = $date2->getTimestamp() - $date1->getTimestamp();
+        return $diff;
+    }
+
+    public function test()
+    {
+        $tanaman_aktif = 1;
+        $date = date('Y-m-d');
+        $minMax = $this->waktuPenyinaranModel->getWaktuPenyinaranByDate($date, $tanaman_aktif);
+        $sec = (!empty($minMax)) ? $this->dateDiff($minMax['min'], $minMax['max']) : 0;
+        $lampu = $this->secToHR($sec);
+        // echo $lampu;
+        var_dump($minMax);
     }
 }

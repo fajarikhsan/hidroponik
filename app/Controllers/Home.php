@@ -2,18 +2,21 @@
 
 namespace App\Controllers;
 
+use DateTime;
 use App\Models\LogModel;
-use App\Models\WaktuPenyinaranModel;
 use App\Models\SettingModel;
+use App\Models\WaktuPenyinaranModel;
+use App\Models\TanamanModel;
 
 class Home extends BaseController
 {
-    protected $logModel, $waktuPenyinaranModel, $settingModel;
+    protected $logModel, $waktuPenyinaranModel, $settingModel, $tanamanModel;
     public function __construct()
     {
         $this->logModel = new LogModel();
         $this->waktuPenyinaranModel = new WaktuPenyinaranModel();
         $this->settingModel = new SettingModel();
+        $this->tanamanModel = new TanamanModel();
     }
 
     public function index()
@@ -28,7 +31,15 @@ class Home extends BaseController
     {
         $date = date('Y-m-d');
         $log = $this->logModel->orderBy('created_at', 'DESC')->first();
-        $lampu = $this->secToHR($this->waktuPenyinaranModel->where('DATE(waktu)', $date)->countAllResults());
+        $tanaman_aktif = $this->tanamanModel->getTanamanAktif();
+        if (!empty($tanaman_aktif)) {
+            $tanaman_aktif = $tanaman_aktif['id'];
+            $minMax = $this->waktuPenyinaranModel->getWaktuPenyinaranByDate($date, $tanaman_aktif);
+            $sec = (!empty($minMax)) ? $this->dateDiff($minMax['min'], $minMax['max']) : 0;
+            $lampu = $this->secToHR($sec);
+        } else {
+            $lampu = 'Tidak Ada Tanaman Aktif';
+        }
 
         $data = [
             'suhu_udara' => $log['suhu_udara'],
@@ -52,5 +63,15 @@ class Home extends BaseController
         $minutes = sprintf("%02d", $minutes_temp);
         $seconds = sprintf("%02d", $seconds_temp);
         return "$hours:$minutes:$seconds";
+    }
+
+    public function dateDiff($date1, $date2)
+    {
+        // Create two new DateTime-objects...
+        $date1 = new DateTime($date1);
+        $date2 = new DateTime($date2);
+
+        $diff = $date2->getTimestamp() - $date1->getTimestamp();
+        return $diff;
     }
 }

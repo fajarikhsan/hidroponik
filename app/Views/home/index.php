@@ -222,6 +222,21 @@
         </div>
     </div>
 
+    <div class="card border-left-info shadow h-100 py-2">
+        <div class="card-body">
+            <div class="row no-gutters align-items-center">
+                <div class="col mr-2">
+                    <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                        Waktu Penyinaran</div>
+                    <div class="h5 mb-0 font-weight-bold text-gray-800" id="waktu_penyinaran">00:00:00</div>
+                </div>
+                <div class="col-auto">
+                    <i class="fas fa-clock fa-2x text-gray-500"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
 <?= $this->endSection(); ?>
 
@@ -232,12 +247,13 @@
             url: '/home/get_data',
             dataType: 'json',
             success: function(data) {
-                $('#suhu_udara').text(data.suhu_udara + '°C');
+                $('#suhu_udara').html(data.suhu_udara + '&#8451;');
                 $('#kelembaban_udara').text(data.kelembaban_udara + '%');
-                $('#suhu_air').text(data.suhu_air + '°C');
+                $('#suhu_air').html(data.suhu_air + '&#8451;');
                 $('#ph_air').text(data.ph_air + ' pH');
                 $('#tds_air').text(data.tds_air + ' ppm');
                 $('#jarak_air').text(data.jarak_air + ' cm');
+                $('#waktu_penyinaran').text(data.lampu);
             }
         });
     }
