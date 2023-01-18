@@ -7,16 +7,18 @@ use App\Models\LogModel;
 use App\Models\SettingModel;
 use App\Models\WaktuPenyinaranModel;
 use App\Models\TanamanModel;
+use App\Models\FotoModel;
 
 class Home extends BaseController
 {
-    protected $logModel, $waktuPenyinaranModel, $settingModel, $tanamanModel;
+    protected $logModel, $waktuPenyinaranModel, $settingModel, $tanamanModel, $fotoModel;
     public function __construct()
     {
         $this->logModel = new LogModel();
         $this->waktuPenyinaranModel = new WaktuPenyinaranModel();
         $this->settingModel = new SettingModel();
         $this->tanamanModel = new TanamanModel();
+        $this->fotoModel = new FotoModel();
     }
 
     public function index()
@@ -31,6 +33,7 @@ class Home extends BaseController
     {
         $date = date('Y-m-d');
         $log = $this->logModel->orderBy('created_at', 'DESC')->first();
+        $foto = $this->fotoModel->orderBy('created_at', 'DESC')->first();
         $tanaman_aktif = $this->tanamanModel->getTanamanAktif();
         if (!empty($tanaman_aktif)) {
             $tanaman_aktif = $tanaman_aktif['id'];
@@ -48,7 +51,8 @@ class Home extends BaseController
             'ph_air' => $log['ph_air'],
             'tds_air' => $log['tds_air'],
             'jarak_air' => $log['jarak_air'],
-            'lampu' => $lampu
+            'lampu' => $lampu,
+            'foto' => $foto
         ];
 
         echo json_encode($data);

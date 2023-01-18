@@ -119,7 +119,7 @@
             </div>
         </div>
     </div>
-    <div class="row justify-content-around">
+    <!-- <div class="row justify-content-around">
         <div class="col-md-4 mb-4">
             <div class="card border-left-success shadow h-100 py-2">
                 <div class="card-body">
@@ -220,9 +220,9 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
 
-    <div class="card border-left-info shadow h-100 py-2">
+    <div class="card border-left-info shadow h-100 py-2 mb-4">
         <div class="card-body">
             <div class="row no-gutters align-items-center">
                 <div class="col mr-2">
@@ -237,10 +237,34 @@
         </div>
     </div>
 
+    <div class="card border-left-dark shadow h-100 py-2 mb-4">
+        <div class="card-body">
+            <div class="row no-gutters align-items-center">
+                <div class="col mr-2">
+                    <div class=" font-weight-bold text-dark text-uppercase mb-4">
+                        foto & Keadaan Tanaman</div>
+                    <div class="row">
+                        <div class="col">
+                            <img src="/foto/1673860521_627f5da2031c4d6eef6c.jpg" class="img-fluid" id="foto" alt="Responsive image">
+                        </div>
+                        <div class="col">
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="status_tanaman">Masa Pertumbuhan <strong>VEGETATIF</strong></div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="tanggal_foto">18 Januari 2023 12:10:00</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-auto">
+                    <i class="fas fa-seedling fa-2x text-gray-500"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
 <?= $this->endSection(); ?>
 
 <?= $this->section('footer'); ?>
+<script src="/plugins/moment/moment.min.js"></script>
 <script>
     function get_data() {
         $.ajax({
@@ -254,6 +278,9 @@
                 $('#tds_air').text(data.tds_air + ' ppm');
                 $('#jarak_air').text(data.jarak_air + ' cm');
                 $('#waktu_penyinaran').text(data.lampu);
+                $('#foto').attr('src', '/foto/' + data.foto.file_name);
+                $('#tanggal_foto').text(moment(data.foto.created_at).format('DD MMMM YYYY HH:mm:ss'));
+                $('#status_tanaman').text(data.foto.status_tanaman);
             }
         });
     }

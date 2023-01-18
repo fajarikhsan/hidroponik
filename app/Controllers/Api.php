@@ -8,10 +8,12 @@ use App\Models\ManualModel;
 use App\Models\SettingModel;
 use App\Models\TanamanModel;
 use App\Models\WaktuPenyinaranModel;
+use App\Models\FotoModel;
+use App\Models\ObjectDetectionModel;
 
 class Api extends BaseController
 {
-    protected $logModel, $waktuPenyinaranModel, $settingModel, $tanamanModel, $manualModel;
+    protected $logModel, $waktuPenyinaranModel, $settingModel, $tanamanModel, $manualModel, $fotoModel, $objectDetectionModel;
     public function __construct()
     {
         $this->logModel = new LogModel();
@@ -19,6 +21,8 @@ class Api extends BaseController
         $this->settingModel = new SettingModel();
         $this->tanamanModel = new TanamanModel();
         $this->manualModel = new ManualModel();
+        $this->fotoModel = new FotoModel();
+        $this->objectDetectionModel = new ObjectDetectionModel();
     }
 
     public function log()
@@ -29,14 +33,14 @@ class Api extends BaseController
         $jarak_air = $this->request->getPost('jarak_air');
         $ph_air = $this->request->getPost('ph_air');
         $tds_air = $this->request->getPost('tds_air');
-        $created_at = $this->request->getPost('created_at');
-        $exp_datetime = explode(" ", $created_at);
-        $exp_date = explode(".", $exp_datetime[0]);
-        $date = $exp_date[2] . "-" . $exp_date[1] . "-" . $exp_date[0];
-        $time = $exp_datetime[1];
-        $datetime = $date . " " . $time;
-        // $now = date('Y-m-d H:i:s');
-        // $date = explode(' ', $now)[0];
+        // $created_at = $this->request->getPost('created_at');
+        // $exp_datetime = explode(" ", $created_at);
+        // $exp_date = explode(".", $exp_datetime[0]);
+        // $date = $exp_date[2] . "-" . $exp_date[1] . "-" . $exp_date[0];
+        // $time = $exp_datetime[1];
+        // $datetime = $date . " " . $time;
+        $now = date('Y-m-d H:i:s');
+        $date = explode(' ', $now)[0];
 
         $log = [
             'suhu_udara' => $suhu_udara,
@@ -45,11 +49,11 @@ class Api extends BaseController
             'jarak_air' => $jarak_air,
             'ph_air' => $ph_air,
             'tds_air' => $tds_air,
-            'created_at' => $datetime
+            'created_at' => $now
         ];
 
         $lamp = [
-            'waktu' => $datetime
+            'waktu' => $now
         ];
 
         $manual = $this->manualModel->first();
@@ -119,5 +123,97 @@ class Api extends BaseController
         $lampu = $this->secToHR($sec);
         // echo $lampu;
         var_dump($minMax);
+    }
+
+    public function foto()
+    {
+        if (!$this->validate([
+            'foto' => [
+                'uploaded[foto]',
+                'mime_in[foto,image/png,image/jpg,image/jpeg,image/gif]',
+                'ext_in[foto,png,jpg,gif,jpeg]'
+            ],
+        ])) {
+            echo implode(" ", $this->validator->getErrors());
+            return;
+        };
+
+        $foto = $this->request->getFile('foto');
+        $file_name = $foto->getRandomName();
+        $foto->move('foto', $file_name);
+
+        $tanaman_aktif = $this->tanamanModel->getTanamanAktif();
+        if (!empty($tanaman_aktif)) {
+            $data = [
+                'file_name' => $file_name,
+                'status_tanaman' => NULL,
+                'tanaman_id' => $tanaman_aktif['id']
+            ];
+            $this->fotoModel->insert($data);
+            $foto_id = $this->fotoModel->getInsertID();
+            $detection = $this->object_detection($file_name, $foto_id);
+            if ($detection['status'] == 'success') {
+                if ($detection['tomato'] == TRUE || $detection['flower'] == TRUE) {
+                    $status_tanaman = 'GENERATIF';
+                } else {
+                    $status_tanaman = 'VEGETATIF';
+                }
+                $update = [
+                    'status_tanaman' => $status_tanaman,
+                    'tomat' => ($detection['tomato']) ? '1' : '0',
+                    'bunga' => ($detection['flower']) ? '1' : '0'
+                ];
+                $this->fotoModel->update($foto_id, $update);
+            }
+        }
+        echo "ok";
+    }
+
+    public function object_detection($img, $foto_id)
+    {
+        $curl = curl_init();
+        curl_setopt_array($curl, array(CURLOPT_URL => "https://api.chooch.ai/predict/object_detection/?model_id=1982&apikey=9474114e-3f6f-425b-9cbf-6f8e947cbe0a", CURLOPT_RETURNTRANSFER => true, CURLOPT_ENCODING => "", CURLOPT_MAXREDIRS => 10, CURLOPT_TIMEOUT => 0, CURLOPT_FOLLOWLOCATION => false, CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1, CURLOPT_CUSTOMREQUEST => "POST", CURLOPT_POSTFIELDS => array('image' => new \CURLFILE(FCPATH . '/foto/' . $img, 'image/jpeg', $img)),));
+        $response = curl_exec($curl);
+        $err = curl_error($curl);
+        curl_close($curl);
+        $result = [];
+        if ($err) {
+            $result = [
+                'status' => 'error',
+                'message' => $err
+            ];
+        } else {
+            $tomato = FALSE;
+            $flower = FALSE;
+            $json = json_decode($response, true);
+            $predictions = $json['predictions'];
+            $objects = [];
+            foreach ($predictions as $prediction) {
+                if (strpos(strtolower($prediction['class_title']), 'tomato') === false) {
+                } else {
+                    $tomato = TRUE;
+                }
+                if (strpos(strtolower($prediction['class_title']), 'flower') === false) {
+                } else {
+                    $flower = TRUE;
+                }
+                $objects[] = [
+                    'class_title' => $prediction['class_title'],
+                    'score' => $prediction['score'],
+                    'foto_id' => $foto_id
+                ];
+            }
+            $result = [
+                'status' => 'success',
+                'tomato' => $tomato,
+                'flower' => $flower,
+                'objects' => $objects
+            ];
+
+            if (!empty($objects)) {
+                $this->objectDetectionModel->insertBatch($objects);
+            }
+        }
+        return $result;
     }
 }
