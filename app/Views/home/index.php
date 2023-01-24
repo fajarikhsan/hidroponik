@@ -249,7 +249,8 @@
                         </div>
                         <div class="col">
                             <div class="h5 mb-0 font-weight-bold text-gray-800" id="status_tanaman">Masa Pertumbuhan <strong>VEGETATIF</strong></div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="tanggal_foto">18 Januari 2023 12:10:00</div>
+                            <div class="h6 mb-0 text-gray-800" id="deteksi"></div>
+                            <div class="h5 mb-0 text-gray-800" id="tanggal_foto">18 Januari 2023 12:10:00</div>
                         </div>
                     </div>
                 </div>
@@ -281,6 +282,8 @@
                 $('#foto').attr('src', '/foto/' + data.foto.file_name);
                 $('#tanggal_foto').text(moment(data.foto.created_at).format('DD MMMM YYYY HH:mm:ss'));
                 $('#status_tanaman').text(data.foto.status_tanaman);
+                let deteksi = (data.foto.tomat == '1' || data.foto.bunga == '1') ? 'Tomat Terdeteksi' : 'Tomat Tidak Terdeteksi';
+                $('#deteksi').text(deteksi);
             }
         });
     }

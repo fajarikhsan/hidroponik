@@ -8,7 +8,7 @@ class LogModel extends Model
 {
     protected $table = 'log';
     protected $primaryKey = 'id';
-    protected $allowedFields = ['suhu_udara', 'suhu_air', 'kelembaban_udara', 'jarak_air', 'ph_air', 'tds_air', 'created_at'];
+    protected $allowedFields = ['suhu_udara', 'suhu_air', 'kelembaban_udara', 'jarak_air', 'ph_air', 'tds_air', 'created_at', 'tanaman_id'];
     protected $useAutoIncrement = true;
     protected $useTimestamps = false;
 }

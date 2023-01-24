@@ -76,6 +76,15 @@
             </li>
 
             <!-- Divider -->
+            <hr class="sidebar-divider">
+
+            <li class="nav-item <?= ($title == 'Log') ? 'active' : ''; ?>">
+                <a class="nav-link" href="/log">
+                    <i class="fas fa-history"></i>
+                    <span>Log</span></a>
+            </li>
+
+            <!-- Divider -->
             <hr class="sidebar-divider d-none d-md-block">
 
             <!-- Sidebar Toggler (Sidebar) -->
