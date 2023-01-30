@@ -33,7 +33,7 @@ class Home extends BaseController
     {
         $date = date('Y-m-d');
         $log = $this->logModel->orderBy('created_at', 'DESC')->first();
-        $foto = $this->fotoModel->orderBy('created_at', 'DESC')->first();
+        $foto = $this->fotoModel->where('status_tanaman IS NOT NULL')->orderBy('created_at', 'DESC')->first();
         $tanaman_aktif = $this->tanamanModel->getTanamanAktif();
         if (!empty($tanaman_aktif)) {
             $tanaman_aktif = $tanaman_aktif['id'];

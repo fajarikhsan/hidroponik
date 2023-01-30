@@ -9,7 +9,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Hidroponik Indoor - Login</title>
+    <title>Monitoring Tomat Ceri - Login</title>
 
     <!-- Custom fonts for this template-->
     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
@@ -33,7 +33,7 @@
                     <div class="card-body p-0">
                         <div class="p-5">
                             <div class="text-center text-gray-200 mb-4">
-                                <h1 class="h4 mb-4">Hidroponik Indoor</h1>
+                                <h1 class="h4 mb-4">Monitoring</h1>
                                 <h6>Tomat Ceri</h6>
                             </div>
                             <?php if (session()->getFlashdata('error')) : ?>

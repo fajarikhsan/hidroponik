@@ -80,7 +80,7 @@ class Tanaman extends BaseController
             'tanaman_id' => $last_insert_id,
             'batas_suhu' => $batas_suhu,
             'lama_penyinaran' => $this->hrToSec($lama_penyinaran),
-            'batas_air' => 0
+            'batas_air' => 10
         ];
 
         $this->settingModel->insert($setting);

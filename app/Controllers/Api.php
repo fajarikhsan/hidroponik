@@ -33,6 +33,7 @@ class Api extends BaseController
         $jarak_air = $this->request->getPost('jarak_air');
         $ph_air = $this->request->getPost('ph_air');
         $tds_air = $this->request->getPost('tds_air');
+        $valve_on = $this->request->getPost('valve_on');
         // $created_at = $this->request->getPost('created_at');
         // $exp_datetime = explode(" ", $created_at);
         // $exp_date = explode(".", $exp_datetime[0]);
@@ -60,7 +61,8 @@ class Api extends BaseController
         if ($manual['manual'] == '1') {
             $data = [
                 'lampu_on' => ($manual['lampu_on'] == '1') ? TRUE : FALSE,
-                'kipas_on' => ($manual['kipas_on'] == '1') ? TRUE : FALSE
+                'kipas_on' => ($manual['kipas_on'] == '1') ? TRUE : FALSE,
+                'valve_on' => ($manual['valve_on'] == '1') ? TRUE : FALSE
             ];
             $tanaman_aktif = $this->tanamanModel->getTanamanAktif();
             if (!empty($tanaman_aktif)) {
@@ -72,17 +74,20 @@ class Api extends BaseController
                 $log['tanaman_id'] = $tanaman_aktif['id'];
                 $lamp['tanaman_id'] = $tanaman_aktif['id'];
                 $this->waktuPenyinaranModel->insert($lamp);
-                $setting = $this->settingModel->orderBy('created_at', 'DESC')->first();
+                $setting = $this->settingModel->where('tanaman_id', $tanaman_aktif['id'])->first();
                 $minMax = $this->waktuPenyinaranModel->getWaktuPenyinaranByDate($date, $tanaman_aktif['id']);
                 $waktu_detik = (!empty($minMax)) ? $this->dateDiff($minMax['min'], $minMax['max']) : 0;
                 $data = [
                     'lampu_on' => ($waktu_detik < $setting['lama_penyinaran']) ? TRUE : FALSE,
-                    'kipas_on' => ($setting['batas_suhu'] < $suhu_udara) ? TRUE : FALSE
+                    'kipas_on' => ($setting['batas_suhu'] < $suhu_udara) ? TRUE : FALSE,
+                    'valve_on' => ($jarak_air <= $setting['batas_air']) ? TRUE : (($jarak_air >= 20) ? FALSE : $valve_on)
+                    // 'valve_on' => $valve_on
                 ];
             } else {
                 $data = [
                     'lampu_on' => FALSE,
-                    'kipas_on' => FALSE
+                    'kipas_on' => FALSE,
+                    'valve_on' => FALSE
                 ];
             }
         }
@@ -151,19 +156,26 @@ class Api extends BaseController
             ];
             $this->fotoModel->insert($data);
             $foto_id = $this->fotoModel->getInsertID();
-            $detection = $this->object_detection($file_name, $foto_id);
-            if ($detection['status'] == 'success') {
-                if ($detection['tomato'] == TRUE || $detection['flower'] == TRUE) {
-                    $status_tanaman = 'GENERATIF';
-                } else {
-                    $status_tanaman = 'VEGETATIF';
+            $fotoData = $this->fotoModel->where('status_tanaman IS NOT NULL')->orderBy('created_at', 'DESC')->first();
+            $now = date('Y-m-d H:i:s');
+            $diff = $this->dateDiff($fotoData['created_at'], $now);
+            $exp = explode(':', $this->secToHR($diff));
+            $hour = (int) $exp[0];
+            if (empty($fotoData) || $hour >= 6) {
+                $detection = $this->object_detection($file_name, $foto_id);
+                if ($detection['status'] == 'success') {
+                    if ($detection['tomato'] == TRUE || $detection['flower'] == TRUE) {
+                        $status_tanaman = 'GENERATIF';
+                    } else {
+                        $status_tanaman = 'VEGETATIF';
+                    }
+                    $update = [
+                        'status_tanaman' => $status_tanaman,
+                        'tomat' => ($detection['tomato']) ? '1' : '0',
+                        'bunga' => ($detection['flower']) ? '1' : '0'
+                    ];
+                    $this->fotoModel->update($foto_id, $update);
                 }
-                $update = [
-                    'status_tanaman' => $status_tanaman,
-                    'tomat' => ($detection['tomato']) ? '1' : '0',
-                    'bunga' => ($detection['flower']) ? '1' : '0'
-                ];
-                $this->fotoModel->update($foto_id, $update);
             }
         }
         echo "ok";

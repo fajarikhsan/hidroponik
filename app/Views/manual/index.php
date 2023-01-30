@@ -76,7 +76,7 @@
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="font-weight-bold text-primary text-uppercase">
-                                Pompa Air</div>
+                                Katup Air</div>
                         </div>
                         <div class="col-auto">
                             <div class="custom-control custom-switch">
