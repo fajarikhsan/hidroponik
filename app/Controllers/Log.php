@@ -4,9 +4,6 @@ namespace App\Controllers;
 
 use App\Models\LogModel;
 use App\Models\FotoModel;
-use App\Models\SettingModel;
-use App\Models\TanamanModel;
-use App\Models\WaktuPenyinaranModel;
 use App\Controllers\BaseController;
 
 class Log extends BaseController
@@ -29,7 +26,7 @@ class Log extends BaseController
     public function getLog()
     {
         $data = [
-            'data' => $this->logModel->orderBy('id', 'DESC')->findAll()
+            'data' => $this->logModel->orderBy('id', 'DESC')->limit(1000)->find()
         ];
         echo json_encode($data);
     }
@@ -37,7 +34,7 @@ class Log extends BaseController
     public function getPics()
     {
         $data = [
-            'data' => $this->fotoModel->orderBy('id', 'DESC')->findAll()
+            'data' => $this->fotoModel->orderBy('id', 'DESC')->limit(1000)->find()
         ];
         echo json_encode($data);
     }

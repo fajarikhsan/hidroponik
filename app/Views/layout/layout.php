@@ -85,6 +85,15 @@
             </li>
 
             <!-- Divider -->
+            <hr class="sidebar-divider">
+
+            <li class="nav-item <?= ($title == 'Chart') ? 'active' : ''; ?>">
+                <a class="nav-link" href="/chart">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Chart</span></a>
+            </li>
+
+            <!-- Divider -->
             <hr class="sidebar-divider d-none d-md-block">
 
             <!-- Sidebar Toggler (Sidebar) -->
