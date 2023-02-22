@@ -10,10 +10,11 @@ use App\Models\TanamanModel;
 use App\Models\WaktuPenyinaranModel;
 use App\Models\FotoModel;
 use App\Models\ObjectDetectionModel;
+use App\Models\PhLogModel;
 
 class Api extends BaseController
 {
-    protected $logModel, $waktuPenyinaranModel, $settingModel, $tanamanModel, $manualModel, $fotoModel, $objectDetectionModel;
+    protected $logModel, $waktuPenyinaranModel, $settingModel, $tanamanModel, $manualModel, $fotoModel, $objectDetectionModel, $phLogModel;
     public function __construct()
     {
         $this->logModel = new LogModel();
@@ -23,6 +24,7 @@ class Api extends BaseController
         $this->manualModel = new ManualModel();
         $this->fotoModel = new FotoModel();
         $this->objectDetectionModel = new ObjectDetectionModel();
+        $this->phLogModel = new PhLogModel();
     }
 
     public function log()
@@ -34,6 +36,7 @@ class Api extends BaseController
         $ph_air = $this->request->getPost('ph_air');
         $tds_air = $this->request->getPost('tds_air');
         $valve_on = $this->request->getPost('valve_on');
+        $valve_on = ($valve_on == '1' || $valve_on == 'true' || $valve_on == 1 || $valve_on == true) ? TRUE : FALSE;
         // $created_at = $this->request->getPost('created_at');
         // $exp_datetime = explode(" ", $created_at);
         // $exp_date = explode(".", $exp_datetime[0]);
@@ -78,15 +81,25 @@ class Api extends BaseController
                 $setting = $this->settingModel->where('tanaman_id', $tanaman_aktif['id'])->first();
                 $lampu_on = FALSE;
                 if ($hour >= 6) {
-                    $this->waktuPenyinaranModel->insert($lamp);
                     $minMax = $this->waktuPenyinaranModel->getWaktuPenyinaranByDate($date, $tanaman_aktif['id']);
-                    $waktu_detik = (!empty($minMax)) ? $this->dateDiff($minMax['min'], $minMax['max']) : 0;
+                    $waktu_detik = ($minMax['min'] != NULL && $minMax['max'] != NULL) ? $this->dateDiff($minMax['min'], $minMax['max']) : 0;
+                    if ($waktu_detik < $setting['lama_penyinaran']) {
+                        $this->waktuPenyinaranModel->insert($lamp);
+                    }
                     $lampu_on = ($waktu_detik < $setting['lama_penyinaran']) ? TRUE : FALSE;
+                }
+                $valve_status = FALSE;
+                if ($jarak_air <= $setting['batas_air']) {
+                    $valve_status = TRUE;
+                } else if ($jarak_air >= 20) {
+                    $valve_status = FALSE;
+                } else {
+                    $valve_status = $valve_on;
                 }
                 $data = [
                     'lampu_on' => $lampu_on,
                     'kipas_on' => ($setting['batas_suhu'] < $suhu_udara) ? TRUE : FALSE,
-                    'valve_on' => ($jarak_air <= $setting['batas_air']) ? TRUE : (($jarak_air >= 20) ? FALSE : $valve_on)
+                    'valve_on' => $valve_status
                     // 'valve_on' => $valve_on
                 ];
             } else {
@@ -102,6 +115,23 @@ class Api extends BaseController
 
 
         echo strval(json_encode($data));
+    }
+
+    public function ph()
+    {
+        $ph = $this->request->getPost('ph');
+        $tanaman_aktif = $this->tanamanModel->getTanamanAktif();
+        $tanaman_id = $tanaman_aktif['id'];
+
+        $data = [
+            'ph' => $ph,
+            'tanaman_id' => $tanaman_id
+        ];
+
+        $this->phLogModel->insert($data);
+        $last_log = $this->phLogModel->getInsertID();
+        $data['id'] = $last_log;
+        echo json_encode($data);
     }
 
     public function secToHR($seconds)
@@ -160,33 +190,28 @@ class Api extends BaseController
                 'status_tanaman' => NULL,
                 'tanaman_id' => $tanaman_aktif['id']
             ];
-            $fotoDataFirst = $this->fotoModel->orderBy('created_at', 'DESC')->first();
             $now = date('Y-m-d H:i:s');
-            $diff = $this->dateDiff($fotoDataFirst['created_at'], $now);
+            $hourNow = date('H');
+            $this->fotoModel->insert($data);
+            $foto_id = $this->fotoModel->getInsertID();
+            $fotoData = $this->fotoModel->where('status_tanaman IS NOT NULL')->orderBy('created_at', 'DESC')->first();
+            $diff = $this->dateDiff($fotoData['created_at'], $now);
             $exp = explode(':', $this->secToHR($diff));
-            $minute = (int) $exp[1];
-            if (empty($fotoDataFirst) || $minute >= 1) {
-                $this->fotoModel->insert($data);
-                $foto_id = $this->fotoModel->getInsertID();
-                $fotoData = $this->fotoModel->where('status_tanaman IS NOT NULL')->orderBy('created_at', 'DESC')->first();
-                $diff = $this->dateDiff($fotoData['created_at'], $now);
-                $exp = explode(':', $this->secToHR($diff));
-                $hour = (int) $exp[0];
-                if (empty($fotoData) || $hour >= 6) {
-                    $detection = $this->object_detection($file_name, $foto_id);
-                    if ($detection['status'] == 'success') {
-                        if ($detection['tomato'] == TRUE || $detection['flower'] == TRUE) {
-                            $status_tanaman = 'GENERATIF';
-                        } else {
-                            $status_tanaman = 'VEGETATIF';
-                        }
-                        $update = [
-                            'status_tanaman' => $status_tanaman,
-                            'tomat' => ($detection['tomato']) ? '1' : '0',
-                            'bunga' => ($detection['flower']) ? '1' : '0'
-                        ];
-                        $this->fotoModel->update($foto_id, $update);
+            $hour = (int) $exp[0];
+            if (empty($fotoData) || ($hour >= 3 && ($hourNow >= 6 && $hourNow <= 18))) {
+                $detection = $this->object_detection($file_name, $foto_id);
+                if ($detection['status'] == 'success') {
+                    if ($detection['tomato'] == TRUE || $detection['flower'] == TRUE) {
+                        $status_tanaman = 'GENERATIF';
+                    } else {
+                        $status_tanaman = 'VEGETATIF';
                     }
+                    $update = [
+                        'status_tanaman' => $status_tanaman,
+                        'tomat' => ($detection['tomato']) ? '1' : '0',
+                        'bunga' => ($detection['flower']) ? '1' : '0'
+                    ];
+                    $this->fotoModel->update($foto_id, $update);
                 }
             }
         }
@@ -213,12 +238,10 @@ class Api extends BaseController
             $predictions = $json['predictions'];
             $objects = [];
             foreach ($predictions as $prediction) {
-                if (strpos(strtolower($prediction['class_title']), 'tomato') === false) {
-                } else {
+                if ($this->search(strtolower($prediction['class_title']), 'tomato')) {
                     $tomato = TRUE;
                 }
-                if (strpos(strtolower($prediction['class_title']), 'flower') === false) {
-                } else {
+                if ($this->search(strtolower($prediction['class_title']), 'flower')) {
                     $flower = TRUE;
                 }
                 $objects[] = [
@@ -239,5 +262,14 @@ class Api extends BaseController
             }
         }
         return $result;
+    }
+
+    public function search($str, $find)
+    {
+        if (preg_match("/\b{$find}\b/", $str)) {
+            return TRUE;
+        } else {
+            return FALSE;
+        }
     }
 }

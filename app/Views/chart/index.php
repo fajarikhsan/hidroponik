@@ -184,7 +184,7 @@
                     data: {
                         labels: data.ph_air.label,
                         datasets: [{
-                            label: 'pH Air',
+                            label: 'TDS Air',
                             data: data.ph_air.value,
                             borderColor: '#fff957',
                         }]
@@ -220,7 +220,36 @@
                     }
                 });
             }
-        })
+        });
+        // $.ajax({
+        //     url: '/chart/getPh',
+        //     dataType: 'json',
+        //     success: function(data) {
+        //         if (ph_air) {
+        //             ph_air.destroy();
+        //         }
+        //         ph_air = new Chart($('#ph_air'), {
+        //             type: 'line',
+        //             data: {
+        //                 labels: data.ph.label,
+        //                 datasets: [{
+        //                     label: 'pH Air',
+        //                     data: data.ph.value,
+        //                     borderColor: '#fff957',
+        //                 }]
+        //             },
+        //             options: {
+        //                 scales: {
+        //                     yAxes: [{
+        //                         ticks: {
+        //                             beginAtZero: true
+        //                         }
+        //                     }]
+        //                 }
+        //             }
+        //         });
+        //     }
+        // });
     }
 
     function updateLog() {
@@ -252,7 +281,19 @@
                 tds_air.data.datasets[0].data = data.tds_air.value;
                 tds_air.update();
             }
-        })
+
+        });
+
+        // $.ajax({
+        //     url: '/chart/getPh',
+        //     dataType: 'json',
+        //     success: function(data) {
+        //         ph_air.data.labels = data.ph.label;
+        //         ph_air.data.datasets[0].data = data.ph.value;
+        //         ph_air.update();
+        //     }
+
+        // });
     }
 </script>
 <script>

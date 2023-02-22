@@ -8,10 +8,11 @@ use App\Models\SettingModel;
 use App\Models\WaktuPenyinaranModel;
 use App\Models\TanamanModel;
 use App\Models\FotoModel;
+use App\Models\PhLogModel;
 
 class Home extends BaseController
 {
-    protected $logModel, $waktuPenyinaranModel, $settingModel, $tanamanModel, $fotoModel;
+    protected $logModel, $waktuPenyinaranModel, $settingModel, $tanamanModel, $fotoModel, $phLogModel;
     public function __construct()
     {
         $this->logModel = new LogModel();
@@ -19,6 +20,7 @@ class Home extends BaseController
         $this->settingModel = new SettingModel();
         $this->tanamanModel = new TanamanModel();
         $this->fotoModel = new FotoModel();
+        $this->phLogModel = new PhLogModel();
     }
 
     public function index()
@@ -35,6 +37,7 @@ class Home extends BaseController
         $log = $this->logModel->orderBy('created_at', 'DESC')->first();
         $foto = $this->fotoModel->where('status_tanaman IS NOT NULL')->orderBy('created_at', 'DESC')->first();
         $tanaman_aktif = $this->tanamanModel->getTanamanAktif();
+        // $ph = $this->phLogModel->orderBy('created_at', 'DESC')->first();
         if (!empty($tanaman_aktif)) {
             $tanaman_aktif = $tanaman_aktif['id'];
             $minMax = $this->waktuPenyinaranModel->getWaktuPenyinaranByDate($date, $tanaman_aktif);

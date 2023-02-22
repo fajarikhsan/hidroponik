@@ -16,7 +16,9 @@ class WaktuPenyinaranModel extends Model
     {
         $this->select('MAX(waktu) as max, MIN(waktu) as min');
         $this->where('DATE(waktu)', $date);
-        $this->where('tanaman_id', $tanaman_id);
+        if ($tanaman_id != '') {
+            $this->where('tanaman_id', $tanaman_id);
+        }
         return $this->first();
     }
 }

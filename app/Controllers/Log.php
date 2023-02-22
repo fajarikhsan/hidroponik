@@ -38,4 +38,15 @@ class Log extends BaseController
         ];
         echo json_encode($data);
     }
+
+
+
+    public function getDetectedPics()
+    {
+        $foto = $this->fotoModel->where('status_tanaman IS NOT NULL')->orderBy('created_at', 'DESC')->findAll();
+        $data = [
+            'data' => $foto
+        ];
+        return view('pics', $data);
+    }
 }
