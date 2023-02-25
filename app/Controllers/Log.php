@@ -47,6 +47,11 @@ class Log extends BaseController
         $data = [
             'data' => $foto
         ];
-        return view('pics', $data);
+        // return view('pics', $data);
+        $source = [
+            'data' => $foto
+        ];
+
+        echo json_encode($source);
     }
 }

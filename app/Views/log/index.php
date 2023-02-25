@@ -51,6 +51,25 @@
         </div>
     </div>
 
+    <div class="card">
+        <div class="card-header">
+            Log Deteksi Foto
+        </div>
+        <div class="card-body">
+
+            <table class="table table-hover table-striped" id="deteksi_foto_table">
+                <thead>
+                    <tr>
+                        <th>Foto</th>
+                        <th>Status Tanaman</th>
+                        <th>Tomat Terdeteksi?</th>
+                        <th>Waktu</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+
 </div>
 <?= $this->endSection(); ?>
 
@@ -100,6 +119,36 @@
             order: [],
             "ajax": {
                 "url": "<?= base_url('log/getPics'); ?>"
+            },
+            "columns": [{
+                    "data": "file_name",
+                    "render": function(data, type, row) {
+                        return '<img src="foto/' + data + '" width="300px">';
+                    }
+                },
+                {
+                    "data": "status_tanaman"
+                },
+                {
+                    "data": "tomat",
+                    "render": function(data, type, row) {
+                        if (data == '1' || row.bunga == '1') {
+                            return 'Ya';
+                        } else {
+                            return 'Tidak';
+                        }
+                    }
+                },
+                {
+                    "data": "created_at"
+                }
+            ]
+        });
+
+        let oTable3 = $('#deteksi_foto_table').DataTable({
+            order: [],
+            "ajax": {
+                "url": "<?= base_url('log/getDetectedPics'); ?>"
             },
             "columns": [{
                     "data": "file_name",
